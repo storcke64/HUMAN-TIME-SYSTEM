@@ -193,6 +193,8 @@
         <img src="storcke_hts_logo.png" alt="Storcke HTS Tool">
     </div>
     <p class="footer-text">Powered by the Storcke Family Products HTS Tool</p>
+    <!-- New element for the timestamp -->
+    <p id="last-updated" class="footer-text" style="margin-top: 5px;"></p>
 </footer>
 
 <script>
@@ -380,6 +382,29 @@
         `;
     }
 
+    // --- FUNCTION 4: Update Last Updated Timestamp (Central Time) ---
+    function updateLastUpdatedTimestamp() {
+        const now = new Date();
+        // Use 'America/Chicago' for Central Time (handles CST/CDT automatically)
+        const formatter = new Intl.DateTimeFormat('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true,
+            timeZone: 'America/Chicago', 
+            timeZoneName: 'short'
+        });
+        
+        const formattedDate = formatter.format(now);
+        
+        const timestampElement = document.getElementById('last-updated');
+        if (timestampElement) {
+            timestampElement.textContent = `Last Updated: ${formattedDate}`;
+        }
+    }
+
 
     // Set the default year to the current year and run the conversion on load
     document.addEventListener('DOMContentLoaded', () => {
@@ -400,6 +425,9 @@
         convertToHTS();
         calculateDifference();
         projectFutureYear();
+        
+        // Call the new function to set the timestamp
+        updateLastUpdatedTimestamp();
     });
 
 </script>
