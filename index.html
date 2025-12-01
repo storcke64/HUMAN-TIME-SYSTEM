@@ -203,15 +203,21 @@
     const installDiv = document.getElementById('pwa-install-prompt');
     const installButton = document.getElementById('install-button');
 
+    // Function to check if the app is running in a dedicated window (i.e., installed)
+    function isStandalone() {
+        return window.matchMedia('(display-mode: standalone)').matches || 
+               window.navigator.standalone || // iOS check (older)
+               document.referrer.includes('android-app://'); // Android check
+    }
+
     (function setupPWA() {
         // --- 1. Web App Manifest Generation (Data URL) ---
-        // This manifest allows the browser to present the "Install App" option.
         const manifestContent = {
             "name": "Human Time System",
             "short_name": "HTS Calc",
             "description": "The official calculator for the Human Time System.",
             "start_url": "./",
-            "display": "standalone", // Key for app-like experience
+            "display": "standalone",
             "background_color": "#ffffff",
             "theme_color": "#007bff",
             "icons": [
@@ -228,33 +234,40 @@
         document.head.appendChild(manifestLink);
         
         // --- 2. Service Worker Registration REMOVED to prevent console errors ---
-        // Note: Full PWA offline capability requires a separate service-worker.js file.
+        
+        // Listener to hide the prompt as soon as installation is successful
+        window.addEventListener('appinstalled', () => {
+            console.log('HTS app successfully installed. Hiding install prompt.');
+            installDiv.style.display = 'none'; 
+            deferredPrompt = null;
+        });
+
     })();
 
     // --- 3. Deferred Install Prompt Logic ---
     window.addEventListener('beforeinstallprompt', (e) => {
-        // Prevent the default browser prompt (the automatic banner)
+        // If we detect the app is already installed and running standalone, don't show the button
+        if (isStandalone()) {
+             return; 
+        }
+
         e.preventDefault();
-        // Stash the event so we can trigger it later.
         deferredPrompt = e;
-        // Show our custom install UI button
         installDiv.style.display = 'block';
     });
 
     installButton.addEventListener('click', () => {
-        installDiv.style.display = 'none'; // Hide the button once clicked
+        installDiv.style.display = 'none';
         
         if (deferredPrompt) {
-            // Show the native 'Install App' prompt
             deferredPrompt.prompt();
-            // Wait for the user to respond to the prompt
             deferredPrompt.userChoice.then((choiceResult) => {
                 if (choiceResult.outcome === 'accepted') {
                     console.log('User accepted the HTS installation prompt');
+                    // 'appinstalled' listener handles the final hiding of the button
                 } else {
-                    // User dismissed it, they might want to install later
                     console.log('User dismissed the HTS installation prompt');
-                    installDiv.style.display = 'block'; // Optionally show the button again
+                    installDiv.style.display = 'block'; // Re-show if dismissed
                 }
                 deferredPrompt = null;
             });
@@ -409,6 +422,11 @@
     // Set the default year to the current year and run the conversion on load
     document.addEventListener('DOMContentLoaded', () => {
         const currentYear = new Date().getFullYear(); 
+        
+        // Final check on load: If running in standalone mode (i.e., installed), hide the install prompt.
+        if (isStandalone()) {
+            installDiv.style.display = 'none';
+        }
         
         // 1. Set default for Conversion tool
         document.getElementById('gregorianYear').value = currentYear;
