@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Human Time System (HTS) Year Converter</title>
+    <title>Human Time System (HTS) Converters</title>
     <style>
         /* Modern, Clean Styling */
         body {
@@ -22,6 +22,7 @@
             width: 90%;
             max-width: 450px;
             text-align: center;
+            margin-bottom: 30px; /* Space between converter boxes */
         }
         /* Logo Styling */
         .logo-container {
@@ -37,6 +38,12 @@
             color: #1a1a2e;
             font-size: 1.5em;
             margin-bottom: 30px;
+        }
+        h2 {
+            color: #1a1a2e;
+            font-size: 1.3em;
+            margin-top: 0;
+            margin-bottom: 25px;
         }
         label {
             display: block;
@@ -77,7 +84,7 @@
         button:active {
             transform: scale(0.99);
         }
-        #result {
+        #result-convert, #result-difference {
             margin-top: 35px;
             padding: 20px;
             border: 1px solid #ddd;
@@ -99,7 +106,7 @@
         .storcke-logo img {
             max-width: 150px;
             height: auto;
-            opacity: 0.7; /* Subtly integrated */
+            opacity: 0.7;
         }
         .footer-text {
             color: #666;
@@ -119,13 +126,29 @@
 
     <label for="gregorianYear">Enter Gregorian Year (AD):</label>
     <input type="number" id="gregorianYear" placeholder="e.g., 2025">
+
     <button onclick="convertToHTS()">Calculate HTS Year</button>
 
-    <div id="result">
+    <div id="result-convert">
         Enter a year to see the HTS conversion.
     </div>
 </div>
 
+<div class="container">
+    <h2>Calculate Year Difference (Duration)</h2>
+    
+    <label for="startYear">Enter Start Gregorian Year:</label>
+    <input type="number" id="startYear" placeholder="e.g., 2025">
+    
+    <label for="endYear">Enter End Gregorian Year:</label>
+    <input type="number" id="endYear" placeholder="e.g., 2050">
+
+    <button onclick="calculateDifference()">Calculate Duration</button>
+
+    <div id="result-difference">
+        Enter two years to see the duration between them.
+    </div>
+</div>
 <footer>
     <div class="storcke-logo">
         <img src="storcke_hts_logo.png" alt="Storcke HTS Tool">
@@ -134,21 +157,26 @@
 </footer>
 
 <script>
-    // --- New Code Block for Default Year ---
+    // Set the default year to the current year and run the conversion on load
     document.addEventListener('DOMContentLoaded', () => {
         const currentYear = new Date().getFullYear();
         const yearInput = document.getElementById('gregorianYear');
         
-        // 1. Set the default value to the current year
+        // Set the default value to the current year
         yearInput.value = currentYear;
         
-        // 2. Run the conversion immediately using the current year
+        // Set default values for difference calculator (Current Year and +10)
+        document.getElementById('startYear').value = currentYear;
+        document.getElementById('endYear').value = currentYear + 10;
+        
+        // Run the conversion immediately using the current year
         convertToHTS();
     });
 
+    // --- FUNCTION 1: Gregorian to HTS Conversion ---
     function convertToHTS() {
         const yearInput = document.getElementById('gregorianYear').value;
-        const resultDiv = document.getElementById('result');
+        const resultDiv = document.getElementById('result-convert');
         const gregorianYear = parseInt(yearInput);
 
         if (isNaN(gregorianYear) || gregorianYear < -40000) {
@@ -157,34 +185,24 @@
         }
 
         // --- HTS Conversion Constants ---
-        const BASE_GREGORIAN_YEAR = 2023; // Gregorian year that corresponds to HTS Year 40,000
-        const HTS_BASE_YEAR = 40000;      // HTS Year for 2023 AD
-        const EPOCH_LENGTH = 50000;       // Years per Epoch (A to Z)
-        
-        // Latin alphabet for Epoch representation (A is index 0)
+        const BASE_GREGORIAN_YEAR = 2023;
+        const HTS_BASE_YEAR = 40000;
+        const EPOCH_LENGTH = 50000;
         const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-        // 1. Calculate the Total HTS Year since HTS Year 0
-        const totalHTSYear = HTS_BASE_YEAR + (gregorianYear - BASE_GREGORIAN_YEAR);
-
-        // 2. Determine Epoch and Year within Epoch
-        
-        const HTS_YEAR_0_GREGORIAN = BASE_GREGORIAN_YEAR - HTS_BASE_YEAR; // -37977
+        const HTS_YEAR_0_GREGORIAN = BASE_GREGORIAN_YEAR - HTS_BASE_YEAR;
         const yearsSinceHTS0 = gregorianYear - HTS_YEAR_0_GREGORIAN;
 
         const epochIndex = Math.floor(yearsSinceHTS0 / EPOCH_LENGTH);
         const yearWithinEpoch = yearsSinceHTS0 % EPOCH_LENGTH;
         
         const supercycleNumber = Math.floor(epochIndex / ALPHABET.length) + 1;
-        
         const letterIndex = epochIndex % ALPHABET.length;
         const epochLetter = ALPHABET[letterIndex];
 
         // Format the HTS Result
         const HTS_Year_Formatted = String(yearWithinEpoch).padStart(5, '0');
         const HTS_Epoch_Year = `${epochLetter}${HTS_Year_Formatted}`;
-        
-        // Full Supercycle/Epoch notation (e.g., 1A40002)
         const HTS_Full = `${supercycleNumber}${epochLetter}${HTS_Year_Formatted}`;
 
 
@@ -201,6 +219,35 @@
         `;
     }
     
+    // --- FUNCTION 2: Difference Calculator ---
+    function calculateDifference() {
+        const startYearInput = document.getElementById('startYear').value;
+        const endYearInput = document.getElementById('endYear').value;
+        const resultDiv = document.getElementById('result-difference');
+
+        const startYear = parseInt(startYearInput);
+        const endYear = parseInt(endYearInput);
+
+        if (isNaN(startYear) || isNaN(endYear)) {
+            resultDiv.innerHTML = "❌ Please enter valid numerical years in both fields.";
+            return;
+        }
+        
+        // Calculate the absolute difference in years
+        const difference = Math.abs(endYear - startYear);
+        
+        // Since HTS is a continuous offset of the Gregorian calendar,
+        // the difference in HTS years is the same as the difference in Gregorian years.
+        
+        resultDiv.innerHTML = `
+            <h3>✅ Duration Calculated</h3>
+            <p>The difference between **${startYear} AD** and **${endYear} AD** is:</p>
+            <p style="font-size: 2.5em; color: #007bff; margin: 10px 0;">
+                ${difference} Years
+            </p>
+            <p>This is equivalent to a duration of **${difference} HTS Years.**</p>
+        `;
+    }
 </script>
 
 </body>
