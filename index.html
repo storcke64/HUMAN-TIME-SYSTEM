@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Human Time System (HTS) Converters</title>
+    
+    <!-- PWA Setup: The link to the manifest is generated in the script below -->
+    <!-- The script dynamically creates the manifest data and links it here. -->
+    
     <style>
         /* Modern, Clean Styling */
         body {
@@ -124,7 +128,8 @@
 
 <div class="container">
     <div class="logo-container">
-        <img src="1000035855.png" alt="Human Time System Logo">
+        <!-- Assuming 1000035855.png is available in the deployment folder -->
+        <img src="1000035855.png" alt="Human Time System Logo"> 
     </div>
 
     <h1>Gregorian Year to HTS Converter</h1>
@@ -172,12 +177,121 @@
 </div>
 <footer>
     <div class="storcke-logo">
+        <!-- Assuming storcke_hts_logo.png is available in the deployment folder -->
         <img src="storcke_hts_logo.png" alt="Storcke HTS Tool">
     </div>
     <p class="footer-text">Powered by the Storcke Family Products HTS Tool</p>
 </footer>
 
 <script>
+    // === PWA SETUP LOGIC ===
+    (function setupPWA() {
+        // --- 1. Web App Manifest Generation (Data URL) ---
+        // This manifest tells the browser how to "install" the app.
+        const manifestContent = {
+            "name": "Human Time System",
+            "short_name": "HTS Calc",
+            "description": "The official calculator for the Human Time System.",
+            "start_url": "./",
+            "display": "standalone", // Makes it feel like a native app (no browser UI)
+            "background_color": "#ffffff",
+            "theme_color": "#007bff",
+            "icons": [
+                {
+                    // This assumes '1000035855.png' is your app icon file.
+                    "src": "1000035855.png", 
+                    "sizes": "192x192",
+                    "type": "image/png"
+                },
+                {
+                    "src": "1000035855.png",
+                    "sizes": "512x512",
+                    "type": "image/png"
+                }
+            ]
+        };
+        const manifestJson = JSON.stringify(manifestContent);
+        const manifestUrl = 'data:application/json;charset=utf-8,' + encodeURIComponent(manifestJson);
+
+        const manifestLink = document.createElement('link');
+        manifestLink.rel = 'manifest';
+        manifestLink.href = manifestUrl;
+        document.head.appendChild(manifestLink);
+        
+        // --- 2. Service Worker Registration (Blob URL for single file) ---
+        // This Service Worker enables offline functionality by caching the app.
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // Define the Service Worker script content as a string
+                const serviceWorkerScript = `
+                    const CACHE_NAME = 'hts-calculator-v1';
+                    // We must cache the HTML file itself, the key part of the PWA.
+                    const urlsToCache = [
+                        './', 
+                        'index.html', 
+                        '1000035855.png', 
+                        'storcke_hts_logo.png' 
+                    ];
+
+                    self.addEventListener('install', (event) => {
+                      event.waitUntil(
+                        caches.open(CACHE_NAME).then((cache) => {
+                          // This attempts to cache the current file and assets.
+                          // Note: In a live environment, caching './' is equivalent to the index file.
+                          return cache.addAll(urlsToCache).catch((err) => {
+                            console.warn('Failed to cache some assets for PWA:', err);
+                          });
+                        })
+                      );
+                      self.skipWaiting();
+                    });
+
+                    self.addEventListener('fetch', (event) => {
+                      // Strategy: Cache-first, fall back to network.
+                      event.respondWith(
+                        caches.match(event.request).then((response) => {
+                          if (response) {
+                            return response; // Return cached asset
+                          }
+                          return fetch(event.request); // Fetch from network
+                        })
+                      );
+                    });
+
+                    // Clean up old caches
+                    self.addEventListener('activate', (event) => {
+                      const cacheWhitelist = [CACHE_NAME];
+                      event.waitUntil(
+                        caches.keys().then((cacheNames) => {
+                          return Promise.all(
+                            cacheNames.map((cacheName) => {
+                              if (cacheWhitelist.indexOf(cacheName) === -1) {
+                                return caches.delete(cacheName);
+                              }
+                            })
+                          );
+                        }).then(() => self.clients.claim())
+                      );
+                    });
+                `;
+
+                // Create a Blob and URL for the Service Worker script
+                const blob = new Blob([serviceWorkerScript], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+
+                // Register the Service Worker
+                navigator.serviceWorker.register(swUrl)
+                    .then(registration => {
+                        console.log('PWA Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('PWA Service Worker registration failed:', error);
+                    });
+            });
+        }
+    })();
+    // === END PWA SETUP LOGIC ===
+
     // --- HTS Conversion Logic (Shared) ---
     function getHTSNotation(gregorianYear) {
         // --- HTS Conversion Constants ---
@@ -256,7 +370,7 @@
         `;
     }
 
-    // --- FUNCTION 3: Future Year Projector (NEW) ---
+    // --- FUNCTION 3: Future Year Projector ---
     function projectFutureYear() {
         const baseYearInput = document.getElementById('baseYear').value;
         const yearsToAddInput = document.getElementById('yearsToAdd').value;
@@ -270,7 +384,7 @@
             return;
         }
         
-        // --- NEW VALIDATION: Limit resulting year to 12 billion ---
+        // --- VALIDATION: Limit resulting year to 12 billion ---
         const MAX_GREGORIAN_LIMIT = 12000000000; 
         const futureGregorianYear = baseYear + yearsToAdd;
 
@@ -282,10 +396,8 @@
             `;
             return;
         }
-        // --- END NEW VALIDATION ---
-
+        // --- END VALIDATION ---
         
-        // Use the common HTS logic function
         const htsData = getHTSNotation(futureGregorianYear);
 
         resultDiv.innerHTML = `
@@ -302,7 +414,7 @@
 
     // Set the default year to the current year and run the conversion on load
     document.addEventListener('DOMContentLoaded', () => {
-        const currentYear = new Date().getFullYear(); // Current year is 2025
+        const currentYear = new Date().getFullYear(); 
         
         // 1. Set default for Conversion tool
         document.getElementById('gregorianYear').value = currentYear;
@@ -315,8 +427,10 @@
         document.getElementById('baseYear').value = currentYear;
         document.getElementById('yearsToAdd').value = 100;
 
-        // Run the conversion for the default year immediately on load
+        // Run ALL three calculators on load for instant results
         convertToHTS();
+        calculateDifference();
+        projectFutureYear();
     });
 
 </script>
