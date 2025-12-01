@@ -6,7 +6,6 @@
     <title>Human Time System (HTS) Converters</title>
     
     <!-- PWA Setup: The link to the manifest is generated in the script below -->
-    <!-- The script dynamically creates the manifest data and links it here. -->
     
     <style>
         /* Modern, Clean Styling */
@@ -82,6 +81,13 @@
             font-weight: 700;
             transition: background-color 0.3s, transform 0.1s;
         }
+        button#install-button {
+            background-color: #28a745; /* Green color for install button */
+            margin-top: 15px;
+        }
+        button#install-button:hover {
+            background-color: #218838;
+        }
         button:hover {
             background-color: #0056b3;
         }
@@ -128,7 +134,6 @@
 
 <div class="container">
     <div class="logo-container">
-        <!-- Assuming 1000035855.png is available in the deployment folder -->
         <img src="1000035855.png" alt="Human Time System Logo"> 
     </div>
 
@@ -143,6 +148,14 @@
         The current year will be displayed here on load.
     </div>
 </div>
+
+<!-- PWA Install Prompt Area -->
+<div id="pwa-install-prompt" class="container" style="display:none;">
+    <h2>Get the Full App Experience</h2>
+    <p>Install the HTS Calculator to your device for instant access with a dedicated app icon.</p>
+    <button id="install-button">Install HTS App</button>
+</div>
+<!-- END NEW SECTION -->
 
 <div class="container">
     <h2>Calculate Year Difference (Duration)</h2>
@@ -177,37 +190,31 @@
 </div>
 <footer>
     <div class="storcke-logo">
-        <!-- Assuming storcke_hts_logo.png is available in the deployment folder -->
         <img src="storcke_hts_logo.png" alt="Storcke HTS Tool">
     </div>
     <p class="footer-text">Powered by the Storcke Family Products HTS Tool</p>
 </footer>
 
 <script>
-    // === PWA SETUP LOGIC ===
+    // === PWA SETUP LOGIC (MANIFEST ONLY) ===
+    let deferredPrompt; // Variable to store the install event
+    const installDiv = document.getElementById('pwa-install-prompt');
+    const installButton = document.getElementById('install-button');
+
     (function setupPWA() {
         // --- 1. Web App Manifest Generation (Data URL) ---
-        // This manifest tells the browser how to "install" the app.
+        // This manifest allows the browser to present the "Install App" option.
         const manifestContent = {
             "name": "Human Time System",
             "short_name": "HTS Calc",
             "description": "The official calculator for the Human Time System.",
             "start_url": "./",
-            "display": "standalone", // Makes it feel like a native app (no browser UI)
+            "display": "standalone", // Key for app-like experience
             "background_color": "#ffffff",
             "theme_color": "#007bff",
             "icons": [
-                {
-                    // This assumes '1000035855.png' is your app icon file.
-                    "src": "1000035855.png", 
-                    "sizes": "192x192",
-                    "type": "image/png"
-                },
-                {
-                    "src": "1000035855.png",
-                    "sizes": "512x512",
-                    "type": "image/png"
-                }
+                { "src": "1000035855.png", "sizes": "192x192", "type": "image/png" },
+                { "src": "1000035855.png", "sizes": "512x512", "type": "image/png" }
             ]
         };
         const manifestJson = JSON.stringify(manifestContent);
@@ -218,78 +225,40 @@
         manifestLink.href = manifestUrl;
         document.head.appendChild(manifestLink);
         
-        // --- 2. Service Worker Registration (Blob URL for single file) ---
-        // This Service Worker enables offline functionality by caching the app.
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                // Define the Service Worker script content as a string
-                const serviceWorkerScript = `
-                    const CACHE_NAME = 'hts-calculator-v1';
-                    // We must cache the HTML file itself, the key part of the PWA.
-                    const urlsToCache = [
-                        './', 
-                        'index.html', 
-                        '1000035855.png', 
-                        'storcke_hts_logo.png' 
-                    ];
+        // --- 2. Service Worker Registration REMOVED to prevent console errors ---
+        // Note: Full PWA offline capability requires a separate service-worker.js file.
+    })();
 
-                    self.addEventListener('install', (event) => {
-                      event.waitUntil(
-                        caches.open(CACHE_NAME).then((cache) => {
-                          // This attempts to cache the current file and assets.
-                          // Note: In a live environment, caching './' is equivalent to the index file.
-                          return cache.addAll(urlsToCache).catch((err) => {
-                            console.warn('Failed to cache some assets for PWA:', err);
-                          });
-                        })
-                      );
-                      self.skipWaiting();
-                    });
+    // --- 3. Deferred Install Prompt Logic ---
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent the default browser prompt (the automatic banner)
+        e.preventDefault();
+        // Stash the event so we can trigger it later.
+        deferredPrompt = e;
+        // Show our custom install UI button
+        installDiv.style.display = 'block';
+    });
 
-                    self.addEventListener('fetch', (event) => {
-                      // Strategy: Cache-first, fall back to network.
-                      event.respondWith(
-                        caches.match(event.request).then((response) => {
-                          if (response) {
-                            return response; // Return cached asset
-                          }
-                          return fetch(event.request); // Fetch from network
-                        })
-                      );
-                    });
-
-                    // Clean up old caches
-                    self.addEventListener('activate', (event) => {
-                      const cacheWhitelist = [CACHE_NAME];
-                      event.waitUntil(
-                        caches.keys().then((cacheNames) => {
-                          return Promise.all(
-                            cacheNames.map((cacheName) => {
-                              if (cacheWhitelist.indexOf(cacheName) === -1) {
-                                return caches.delete(cacheName);
-                              }
-                            })
-                          );
-                        }).then(() => self.clients.claim())
-                      );
-                    });
-                `;
-
-                // Create a Blob and URL for the Service Worker script
-                const blob = new Blob([serviceWorkerScript], { type: 'application/javascript' });
-                const swUrl = URL.createObjectURL(blob);
-
-                // Register the Service Worker
-                navigator.serviceWorker.register(swUrl)
-                    .then(registration => {
-                        console.log('PWA Service Worker registered with scope:', registration.scope);
-                    })
-                    .catch(error => {
-                        console.error('PWA Service Worker registration failed:', error);
-                    });
+    installButton.addEventListener('click', () => {
+        installDiv.style.display = 'none'; // Hide the button once clicked
+        
+        if (deferredPrompt) {
+            // Show the native 'Install App' prompt
+            deferredPrompt.prompt();
+            // Wait for the user to respond to the prompt
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the HTS installation prompt');
+                } else {
+                    // User dismissed it, they might want to install later
+                    console.log('User dismissed the HTS installation prompt');
+                    installDiv.style.display = 'block'; // Optionally show the button again
+                }
+                deferredPrompt = null;
             });
         }
-    })();
+    });
+
     // === END PWA SETUP LOGIC ===
 
     // --- HTS Conversion Logic (Shared) ---
