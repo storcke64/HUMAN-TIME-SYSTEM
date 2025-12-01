@@ -84,7 +84,7 @@
         button:active {
             transform: scale(0.99);
         }
-        #result-convert, #result-difference {
+        #result-convert, #result-difference, #result-project {
             margin-top: 35px;
             padding: 20px;
             border: 1px solid #ddd;
@@ -130,7 +130,7 @@
     <button onclick="convertToHTS()">Calculate HTS Year</button>
 
     <div id="result-convert">
-        Enter a year to see the HTS conversion.
+        The current year will be displayed here on load.
     </div>
 </div>
 
@@ -149,6 +149,22 @@
         Enter two years to see the duration between them.
     </div>
 </div>
+
+<div class="container">
+    <h2>Project Future HTS Year</h2>
+    
+    <label for="baseYear">Start Gregorian Year:</label>
+    <input type="number" id="baseYear" placeholder="e.g., 2025">
+    
+    <label for="yearsToAdd">Number of Years to Add:</label>
+    <input type="number" id="yearsToAdd" placeholder="e.g., 50">
+
+    <button onclick="projectFutureYear()">Calculate Future HTS Year</button>
+
+    <div id="result-project">
+        Enter the number of years to add to see the future HTS Year.
+    </div>
+</div>
 <footer>
     <div class="storcke-logo">
         <img src="storcke_hts_logo.png" alt="Storcke HTS Tool">
@@ -157,33 +173,8 @@
 </footer>
 
 <script>
-    // Set the default year to the current year and run the conversion on load
-    document.addEventListener('DOMContentLoaded', () => {
-        const currentYear = new Date().getFullYear();
-        const yearInput = document.getElementById('gregorianYear');
-        
-        // Set the default value to the current year
-        yearInput.value = currentYear;
-        
-        // Set default values for difference calculator (Current Year and +10)
-        document.getElementById('startYear').value = currentYear;
-        document.getElementById('endYear').value = currentYear + 10;
-        
-        // Run the conversion immediately using the current year
-        convertToHTS();
-    });
-
-    // --- FUNCTION 1: Gregorian to HTS Conversion ---
-    function convertToHTS() {
-        const yearInput = document.getElementById('gregorianYear').value;
-        const resultDiv = document.getElementById('result-convert');
-        const gregorianYear = parseInt(yearInput);
-
-        if (isNaN(gregorianYear) || gregorianYear < -40000) {
-            resultDiv.innerHTML = "❌ Please enter a valid Gregorian year (e.g., 2025). The system starts 40,000 years before 2023.";
-            return;
-        }
-
+    // --- HTS Conversion Logic (Shared) ---
+    function getHTSNotation(gregorianYear) {
         // --- HTS Conversion Constants ---
         const BASE_GREGORIAN_YEAR = 2023;
         const HTS_BASE_YEAR = 40000;
@@ -200,21 +191,36 @@
         const letterIndex = epochIndex % ALPHABET.length;
         const epochLetter = ALPHABET[letterIndex];
 
-        // Format the HTS Result
         const HTS_Year_Formatted = String(yearWithinEpoch).padStart(5, '0');
         const HTS_Epoch_Year = `${epochLetter}${HTS_Year_Formatted}`;
         const HTS_Full = `${supercycleNumber}${epochLetter}${HTS_Year_Formatted}`;
+        
+        return { HTS_Epoch_Year, HTS_Full, gregorianYear };
+    }
+    // ------------------------------------
 
+    // --- FUNCTION 1: Gregorian to HTS Conversion ---
+    function convertToHTS() {
+        const yearInput = document.getElementById('gregorianYear').value;
+        const resultDiv = document.getElementById('result-convert');
+        const gregorianYear = parseInt(yearInput);
+
+        if (isNaN(gregorianYear) || gregorianYear < -40000) {
+            resultDiv.innerHTML = "❌ Please enter a valid Gregorian year (e.g., 2025). The system starts 40,000 years before 2023.";
+            return;
+        }
+        
+        const htsData = getHTSNotation(gregorianYear);
 
         resultDiv.innerHTML = `
             <h3>✅ Conversion Complete</h3>
-            <p>The Gregorian Year ${gregorianYear} AD is:</p>
+            <p>The Gregorian Year ${htsData.gregorianYear} AD is:</p>
             <p style="font-size: 2.5em; color: #007bff; margin: 10px 0;">
-                ${HTS_Epoch_Year}
+                ${htsData.HTS_Epoch_Year}
             </p>
             <p>Full HTS Notation (Supercycle/Epoch/Year):</p>
             <p style="font-size: 1.5em; color: #1a1a2e; margin: 5px 0;">
-                **${HTS_Full}**
+                **${htsData.HTS_Full}**
             </p>
         `;
     }
@@ -233,11 +239,7 @@
             return;
         }
         
-        // Calculate the absolute difference in years
         const difference = Math.abs(endYear - startYear);
-        
-        // Since HTS is a continuous offset of the Gregorian calendar,
-        // the difference in HTS years is the same as the difference in Gregorian years.
         
         resultDiv.innerHTML = `
             <h3>✅ Duration Calculated</h3>
@@ -248,6 +250,57 @@
             <p>This is equivalent to a duration of **${difference} HTS Years.**</p>
         `;
     }
+
+    // --- FUNCTION 3: Future Year Projector (NEW) ---
+    function projectFutureYear() {
+        const baseYearInput = document.getElementById('baseYear').value;
+        const yearsToAddInput = document.getElementById('yearsToAdd').value;
+        const resultDiv = document.getElementById('result-project');
+
+        const baseYear = parseInt(baseYearInput);
+        const yearsToAdd = parseInt(yearsToAddInput);
+
+        if (isNaN(baseYear) || isNaN(yearsToAdd)) {
+            resultDiv.innerHTML = "❌ Please enter valid numbers for both the start year and years to add.";
+            return;
+        }
+
+        const futureGregorianYear = baseYear + yearsToAdd;
+        
+        // Use the common HTS logic function
+        const htsData = getHTSNotation(futureGregorianYear);
+
+        resultDiv.innerHTML = `
+            <h3>✅ Projection Calculated</h3>
+            <p>Adding **${yearsToAdd} years** to **${baseYear} AD** results in **${futureGregorianYear} AD**.</p>
+            <p>The HTS Year will be:</p>
+            <p style="font-size: 2.5em; color: #007bff; margin: 10px 0;">
+                ${htsData.HTS_Epoch_Year}
+            </p>
+            <p>Full HTS Notation: **${htsData.HTS_Full}**</p>
+        `;
+    }
+
+
+    // Set the default year to the current year and run the conversion on load
+    document.addEventListener('DOMContentLoaded', () => {
+        const currentYear = new Date().getFullYear(); // Current year is 2025
+        
+        // 1. Set default for Conversion tool
+        document.getElementById('gregorianYear').value = currentYear;
+        
+        // 2. Set defaults for Difference tool
+        document.getElementById('startYear').value = currentYear;
+        document.getElementById('endYear').value = currentYear + 50; // Projected 50 years ahead
+        
+        // 3. Set defaults for Projection tool
+        document.getElementById('baseYear').value = currentYear;
+        document.getElementById('yearsToAdd').value = 100; // Projected 100 years ahead
+
+        // Run the conversion for the default year immediately on load
+        convertToHTS();
+    });
+
 </script>
 
 </body>
