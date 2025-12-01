@@ -6,7 +6,7 @@
     <title>Human Time System (HTS) Converters</title>
     
     <!-- PWA Installation Icon (Favicon) - Using the .jpg for app icons to ensure reliability -->
-    <link rel="icon" type="image/jpeg" href="1000035855.jpg">
+    <link rel="icon" type="image/jpeg" href="1000036045.jpg"> <!-- UPDATED: Switched main icon image for testing -->
     
     <!-- PWA Setup: The link to the manifest is generated in the script below -->
     
@@ -137,8 +137,8 @@
 
 <div class="container">
     <div class="logo-container">
-        <!-- CORRECTED: Using the .jpg extension which is the actual file name. -->
-        <img src="1000035855.jpg" alt="Human Time System Logo"> 
+        <!-- Main Logo: Testing with a different uploaded image to fix the broken image -->
+        <img src="1000036045.jpg" alt="Human Time System Logo"> 
     </div>
 
     <h1>Gregorian Year to HTS Converter</h1>
@@ -194,7 +194,8 @@
 </div>
 <footer>
     <div class="storcke-logo">
-        <img src="storcke_hts_logo.png" alt="Storcke HTS Tool">
+        <!-- Footer Logo: Fixed the file path to use an existing JPG asset -->
+        <img src="1000036091.jpg" alt="Storcke HTS Tool Footer Logo">
     </div>
     <p class="footer-text">Powered by the Storcke Family Products HTS Tool</p>
     <!-- New element for the timestamp -->
@@ -217,9 +218,8 @@
     (function setupPWA() {
         // --- 1. Web App Manifest Generation (Data URL) ---
         // PWA icons are correctly configured to use the .jpg file and image/jpeg type for stability
-        // NOTE: A cache-busting parameter (?v=2) is added to the start_url and icon src to force 
-        // the OS to download the new manifest/icon data, as the user cannot uninstall the PWA.
-        const cacheBuster = "?v=2";
+        // NOTE: Cache buster version bumped to v=3 to attempt to force a fresh manifest download.
+        const cacheBuster = "?v=3";
         
         const manifestContent = {
             "name": "Human Time System",
@@ -230,8 +230,9 @@
             "background_color": "#ffffff",
             "theme_color": "#007bff",
             "icons": [
-                { "src": `1000035855.jpg${cacheBuster}`, "sizes": "192x192", "type": "image/jpeg" }, // BUST CACHE ON ICON URL
-                { "src": `1000035855.jpg${cacheBuster}`, "sizes": "512x512", "type": "image/jpeg" } // BUST CACHE ON ICON URL
+                // USING a different image for the manifest icons, and bumping the cache buster
+                { "src": `1000036045.jpg${cacheBuster}`, "sizes": "192x192", "type": "image/jpeg" }, 
+                { "src": `1000036045.jpg${cacheBuster}`, "sizes": "512x512", "type": "image/jpeg" } 
             ]
         };
         const manifestJson = JSON.stringify(manifestContent);
