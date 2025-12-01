@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Human Time System (HTS) Converters</title>
     
-    <!-- PWA Installation Icon (Favicon) -->
-    <link rel="icon" type="image/png" href="1000035855.png">
+    <!-- PWA Installation Icon (Favicon) - Updated to use .jpg and image/jpeg -->
+    <link rel="icon" type="image/jpeg" href="1000035855.jpg">
     
     <!-- PWA Setup: The link to the manifest is generated in the script below -->
     
@@ -137,7 +137,8 @@
 
 <div class="container">
     <div class="logo-container">
-        <img src="1000035855.png" alt="Human Time System Logo"> 
+        <!-- Updated to use .jpg -->
+        <img src="1000035855.jpg" alt="Human Time System Logo"> 
     </div>
 
     <h1>Gregorian Year to HTS Converter</h1>
@@ -215,6 +216,7 @@
 
     (function setupPWA() {
         // --- 1. Web App Manifest Generation (Data URL) ---
+        // Updated src to .jpg and type to image/jpeg
         const manifestContent = {
             "name": "Human Time System",
             "short_name": "HTS Calc",
@@ -224,8 +226,8 @@
             "background_color": "#ffffff",
             "theme_color": "#007bff",
             "icons": [
-                { "src": "1000035855.png", "sizes": "192x192", "type": "image/png" },
-                { "src": "1000035855.png", "sizes": "512x512", "type": "image/png" }
+                { "src": "1000035855.jpg", "sizes": "192x192", "type": "image/jpeg" },
+                { "src": "1000035855.jpg", "sizes": "512x512", "type": "image/jpeg" }
             ]
         };
         const manifestJson = JSON.stringify(manifestContent);
