@@ -417,7 +417,7 @@
         `;
     }
     
-    // --- FUNCTION 5: Display Load Time ---
+    // --- FUNCTION 5: Display Load Time (Adjusted for Central Time) ---
     function displayLoadTime() {
         const lastUpdatedElement = document.getElementById('last-updated');
 
@@ -429,7 +429,8 @@
             minute: '2-digit',
             second: '2-digit',
             timeZoneName: 'short',
-            timeZone: 'UTC'
+            // --- MODIFIED: Use America/Chicago for Central Time (CT) ---
+            timeZone: 'America/Chicago' 
         };
 
         const loadTimeStr = scriptLoadTime.toLocaleString('en-US', updatedOptions);
@@ -437,7 +438,8 @@
         lastUpdatedElement.innerHTML = `
             <p>The content was last loaded/updated at:</p>
             <p style="font-size:1.1em; color: #1a1a2e;"><strong>${loadTimeStr}</strong></p>
-            <p style="margin-top: 10px; font-size:0.8em;">(Time is Coordinated Universal Time - UTC)</p>
+            <!-- MODIFIED: Update the label to reflect Central Time (CT) -->
+            <p style="margin-top: 10px; font-size:0.8em;">(Time is Central Time - CT)</p>
         `;
     }
 
@@ -464,7 +466,7 @@
         document.getElementById('yearsToAdd').value = 100;
         projectFutureYear();
 
-        // 5. Display the load time
+        // 5. Display the load time in CT
         displayLoadTime();
     });
 
