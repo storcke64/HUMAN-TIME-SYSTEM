@@ -191,7 +191,7 @@
 
 </head>
 <body>
-<!-- === UPDATED: Custom Splash Screen for Minimum 2-Second Delay === -->
+<!-- === Custom Splash Screen (4-Second Delay) === -->
 <div id="custom-splash">
     <!-- Updated logo text -->
     <div class="splash-logo">Storcke HTS</div>
@@ -549,13 +549,13 @@
     }
 
 
-    // Run initialization logic first, then enforce the 2-second splash screen
+    // Run initialization logic first, then enforce the 4-second splash screen
     document.addEventListener('DOMContentLoaded', () => {        
         // 1. Run all calculations to prepare the content (while it's still hidden)
         initializeApp();
 
-        // 2. Set the desired 2000ms (2 second) minimum delay
-        const MINIMUM_SPLASH_TIME = 2000; 
+        // 2. Set the desired 4000ms (4 second) minimum delay
+        const MINIMUM_SPLASH_TIME = 4000; 
         
         // 3. Wait for the minimum time, then call the function to reveal the app
         setTimeout(showAppContent, MINIMUM_SPLASH_TIME);
