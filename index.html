@@ -4,8 +4,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Human Time System (HTS) Converters</title>
     
-    <!-- PWA Installation Icon (Favicon) - Using the .jpg for app icons to ensure reliability -->
-    <link rel="icon" type="image/jpeg" href="1000035855.jpg"> 
+    <!-- PWA Installation Icon (Favicon) - Updated to the confirmed HTS logo file name -->
+    <link rel="icon" type="image/png" href="1000035855.png"> 
     
     <!-- PWA Setup: The link to the manifest is generated in the script below -->
     
@@ -33,9 +33,9 @@
         .logo-container {
             margin-bottom: 25px;
         }
-        /* Styling for the restored image tags */
+        /* Styling for the logo image tags */
         .logo-container img {
-            max-width: 180px; /* Adjusted back to standard logo size */
+            max-width: 180px; 
             height: auto;
             display: block;
             margin: 0 auto;
@@ -121,7 +121,7 @@
             max-width: 450px;
             text-align: center;
         }
-        /* Styling for the restored footer image tag */
+        /* Styling for the footer image tag */
         .storcke-logo img {
             max-width: 150px;
             height: auto;
@@ -140,8 +140,8 @@
 
 <div class="container">
     <div class="logo-container">
-        <!-- Main Logo: Restored using the file name you provided in previous context for maximum compatibility -->
-        <img src="1000036045.jpg" alt="Human Time System Logo"> 
+        <!-- Main Logo: Updated to use 1000035855.png -->
+        <img src="1000035855.png" alt="Human Time System Logo"> 
     </div>
 
     <h1>Gregorian Year to HTS Converter</h1>
@@ -191,8 +191,8 @@
 </div>
 <footer>
     <div class="storcke-logo">
-        <!-- Footer Logo: Restored using the secondary file name used for favicon in previous context -->
-        <img src="1000035855.jpg" alt="Storcke HTS Tool Footer Logo">
+        <!-- Footer Logo: Updated to use storcke_hts_logo.png -->
+        <img src="storcke_hts_logo.png" alt="Storcke HTS Tool Footer Logo">
     </div>
     <p class="footer-text">Powered by the Storcke Family Products HTS Tool</p>
     <!-- New element for the timestamp -->
@@ -214,9 +214,9 @@
             "background_color": "#ffffff",
             "theme_color": "#007bff",
             "icons": [
-                // Note: Retaining the icon ID for app installation.
-                { "src": `1000036045.jpg`, "sizes": "192x192", "type": "image/jpeg" }, 
-                { "src": `1000036045.jpg`, "sizes": "512x512", "type": "image/jpeg" } 
+                // PWA icons updated to consistent file name
+                { "src": `1000035855.png`, "sizes": "192x192", "type": "image/png" }, 
+                { "src": `1000035855.png`, "sizes": "512x512", "type": "image/png" } 
             ]
         };
         const manifestJson = JSON.stringify(manifestContent);
