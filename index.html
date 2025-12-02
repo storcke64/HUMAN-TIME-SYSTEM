@@ -6,7 +6,7 @@
     <title>Human Time System (HTS) Converters</title>
     
     <!-- PWA Installation Icon (Favicon) - Using the .jpg for app icons to ensure reliability -->
-    <link rel="icon" type="image/jpeg" href="1000036045.jpg"> <!-- UPDATED: Switched main icon image for testing -->
+    <link rel="icon" type="image/jpeg" href="1000035855.jpg"> <!-- Reverting to the original working canvas logo -->
     
     <!-- PWA Setup: The link to the manifest is generated in the script below -->
     
@@ -137,8 +137,8 @@
 
 <div class="container">
     <div class="logo-container">
-        <!-- Main Logo: Testing with a different uploaded image to fix the broken image -->
-        <img src="1000036045.jpg" alt="Human Time System Logo"> 
+        <!-- Main Logo: Reverting to the asset that previously loaded correctly -->
+        <img src="1000035855.jpg" alt="Human Time System Logo"> 
     </div>
 
     <h1>Gregorian Year to HTS Converter</h1>
@@ -194,7 +194,7 @@
 </div>
 <footer>
     <div class="storcke-logo">
-        <!-- Footer Logo: Fixed the file path to use an existing JPG asset -->
+        <!-- Footer Logo: Uses a reliable asset -->
         <img src="1000036091.jpg" alt="Storcke HTS Tool Footer Logo">
     </div>
     <p class="footer-text">Powered by the Storcke Family Products HTS Tool</p>
@@ -217,20 +217,19 @@
 
     (function setupPWA() {
         // --- 1. Web App Manifest Generation (Data URL) ---
-        // PWA icons are correctly configured to use the .jpg file and image/jpeg type for stability
-        // NOTE: Cache buster version bumped to v=3 to attempt to force a fresh manifest download.
-        const cacheBuster = "?v=3";
+        // NOTE: Cache buster version bumped to v=4 AND short_name changed to force an update.
+        const cacheBuster = "?v=4";
         
         const manifestContent = {
             "name": "Human Time System",
-            "short_name": "HTS Calc",
+            "short_name": "HTS Time", // **CHANGED to HTS Time**
             "description": "The official calculator for the Human Time System.",
             "start_url": `./${cacheBuster}`, // BUST CACHE ON START URL
             "display": "standalone",
             "background_color": "#ffffff",
             "theme_color": "#007bff",
             "icons": [
-                // USING a different image for the manifest icons, and bumping the cache buster
+                // Using the most recently uploaded icon asset for PWA icon path
                 { "src": `1000036045.jpg${cacheBuster}`, "sizes": "192x192", "type": "image/jpeg" }, 
                 { "src": `1000036045.jpg${cacheBuster}`, "sizes": "512x512", "type": "image/jpeg" } 
             ]
@@ -256,10 +255,12 @@
 
     // --- 3. Deferred Install Prompt Logic ---
     window.addEventListener('beforeinstallprompt', (e) => {
-        // If we detect the app is already installed and running standalone, don't show the button
-        if (isStandalone()) {
+        // TEMP FIX: The check below was removed to force the button to display, 
+        // overriding what appears to be a corrupt PWA cache state on the device.
+        /* if (isStandalone()) {
              return; 
         }
+        */
 
         e.preventDefault();
         deferredPrompt = e;
@@ -433,10 +434,12 @@
     document.addEventListener('DOMContentLoaded', () => {
         const currentYear = new Date().getFullYear(); 
         
-        // Final check on load: If running in standalone mode (i.e., installed), hide the install prompt.
-        if (isStandalone()) {
+        // Removed the isStandalone check on load to ensure the install prompt area is ready 
+        // to be shown by the 'beforeinstallprompt' listener.
+        /* if (isStandalone()) {
             installDiv.style.display = 'none';
         }
+        */
         
         // 1. Set default for Conversion tool
         document.getElementById('gregorianYear').value = currentYear;
