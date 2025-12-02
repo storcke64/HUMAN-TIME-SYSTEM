@@ -85,6 +85,9 @@
         button:active {
             transform: scale(0.99);
         }
+        /* Removed .copy-btn styling */
+        
+        /* Styling for Result Boxes */
         #result-convert, #result-difference, #result-project, #result-hts-convert {
             margin-top: 35px;
             padding: 20px;
@@ -144,8 +147,8 @@
 
 <div class="container">
     <div class="logo-container">
-        <!-- Assuming 1000035855.png is available in the deployment folder -->
-        <img src="https://placehold.co/180x60/1a1a2e/ffffff?text=HTS+Logo" alt="Human Time System Logo" onerror="this.onerror=null; this.src='1000035855.png';"> 
+        <!-- Reverted to original file name as requested -->
+        <img src="1000035855.png" alt="Human Time System Logo"> 
     </div>
 
     <h1>Gregorian Year to HTS Converter</h1>
@@ -216,8 +219,8 @@
 
 <footer>
     <div class="storcke-logo">
-        <!-- Assuming storcke_hts_logo.png is available in the deployment folder -->
-        <img src="https://placehold.co/150x50/343a40/ffffff?text=Storcke+HTS" alt="Storcke HTS Tool" onerror="this.onerror=null; this.src='storcke_hts_logo.png';">
+        <!-- Reverted to original file name as requested -->
+        <img src="storcke_hts_logo.png" alt="Storcke HTS Tool">
     </div>
     <p class="footer-text">Powered by the Storcke Family Products HTS Tool</p>
 </footer>
@@ -225,12 +228,8 @@
 <script>
     // Global variable to capture the exact time the script started (content load time)
     const scriptLoadTime = new Date();
-
-    // === PWA SETUP LOGIC REMOVED ===
-    // This section was removed to resolve the console error: 
-    // "Failed to register a ServiceWorker: The URL protocol of the script ('blob:https://...') is not supported."
-    // in the sandboxed environment.
-    // ===
+    
+    // --- Removed UTILITY FUNCTION: copyResultToClipboard ---
 
     // --- HTS Conversion Logic (Shared) ---
     function getHTSNotation(gregorianYear) {
@@ -275,6 +274,7 @@
         
         const htsData = getHTSNotation(gregorianYear);
 
+        // Reverted HTML structure
         resultDiv.innerHTML = `
             <h3>✅ Conversion Complete</h3>
             <p>The Gregorian Year ${htsData.gregorianYear} AD is:</p>
@@ -341,6 +341,7 @@
         // 3. Calculate the Gregorian Year
         const gregorianYear = yearsSinceHTS0 + HTS_YEAR_0_GREGORIAN;
 
+        // Reverted HTML structure
         resultDiv.innerHTML = `
             <h3>✅ Conversion Complete</h3>
             <p>The HTS Year **${htsInput}** is equivalent to:</p>
@@ -367,6 +368,7 @@
         
         const difference = Math.abs(endYear - startYear);
         
+        // Reverted HTML structure
         resultDiv.innerHTML = `
             <h3>✅ Duration Calculated</h3>
             <p>The difference between **${startYear} AD** and **${endYear} AD** is:</p>
@@ -407,6 +409,7 @@
         
         const htsData = getHTSNotation(futureGregorianYear);
 
+        // Reverted HTML structure
         resultDiv.innerHTML = `
             <h3>✅ Projection Calculated</h3>
             <p>Adding **${yearsToAdd} years** to **${baseYear} AD** results in **${futureGregorianYear} AD**.</p>
