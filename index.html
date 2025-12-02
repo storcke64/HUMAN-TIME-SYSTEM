@@ -153,13 +153,7 @@
     </div>
 </div>
 
-<!-- PWA Install Prompt Area -->
-<div id="pwa-install-prompt" class="container" style="display:none;">
-    <h2>Get the Full App Experience</h2>
-    <p>Install the HTS Calculator to your device for instant access with a dedicated app icon.</p>
-    <button id="install-button">Install HTS App</button>
-</div>
-<!-- END NEW SECTION -->
+<!-- PWA Install Prompt Area (Removed custom prompt since 'beforeinstallprompt' fails to fire) -->
 
 <div class="container">
     <h2>Calculate Year Difference (Duration)</h2>
@@ -204,32 +198,22 @@
 
 <script>
     // === PWA SETUP LOGIC (MANIFEST ONLY) ===
-    let deferredPrompt; // Variable to store the install event
-    const installDiv = document.getElementById('pwa-install-prompt');
-    const installButton = document.getElementById('install-button');
-
-    // Function to check if the app is running in a dedicated window (i.e., installed)
-    function isStandalone() {
-        return window.matchMedia('(display-mode: standalone)').matches || 
-               window.navigator.standalone || 
-               document.referrer.includes('android-app://'); 
-    }
 
     (function setupPWA() {
         // --- 1. Web App Manifest Generation (Data URL) ---
-        // Cache buster version bumped to v=7. Service Worker dependency removed.
-        const cacheBuster = "?v=7"; // BUMPED TO V7
+        // Cache buster version bumped to v=8 (Clean-up version).
+        const cacheBuster = "?v=8"; 
         
         const manifestContent = {
             "name": "Human Time System",
             "short_name": "HTS Time", 
             "description": "The official calculator for the Human Time System.",
             "start_url": "./", // Use relative path
-            "display": "standalone",
+            "display": "standalone", // This is the key for full-screen behavior
             "background_color": "#ffffff",
             "theme_color": "#007bff",
             "icons": [
-                // Ensuring icons are present for installability
+                // Ensuring icons are present for the shortcut/PWA
                 { "src": `1000036045.jpg${cacheBuster}`, "sizes": "192x192", "type": "image/jpeg" }, 
                 { "src": `1000036045.jpg${cacheBuster}`, "sizes": "512x512", "type": "image/jpeg" } 
             ]
@@ -242,42 +226,9 @@
         manifestLink.href = manifestUrl;
         document.head.appendChild(manifestLink);
         
-        // --- NOTE: Service Worker Registration removed due to 'blob:' protocol error ---
-        
-        // Listener to hide the prompt as soon as installation is successful
-        window.addEventListener('appinstalled', () => {
-            console.log('HTS app successfully installed. Hiding install prompt.');
-            installDiv.style.display = 'none'; 
-            deferredPrompt = null;
-        });
+        // --- Service Worker Registration and beforeinstallprompt logic removed as it was blocked by the environment's security policy. ---
 
     })();
-
-    // --- 2. Deferred Install Prompt Logic ---
-    window.addEventListener('beforeinstallprompt', (e) => {
-        // Now that the Service Worker is gone, this event should fire successfully.
-        e.preventDefault();
-        deferredPrompt = e;
-        installDiv.style.display = 'block';
-    });
-
-    installButton.addEventListener('click', () => {
-        installDiv.style.display = 'none';
-        
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') {
-                    console.log('User accepted the HTS installation prompt');
-                    // 'appinstalled' listener handles the final hiding of the button
-                } else {
-                    console.log('User dismissed the HTS installation prompt');
-                    installDiv.style.display = 'block'; // Re-show if dismissed
-                }
-                deferredPrompt = null;
-            });
-        }
-    });
 
     // === END PWA SETUP LOGIC ===
 
