@@ -6,7 +6,7 @@
     <title>Human Time System (HTS) Converters</title>
     
     <!-- PWA Installation Icon (Favicon) - Using the .jpg for app icons to ensure reliability -->
-    <link rel="icon" type="image/jpeg" href="1000035855.jpg"> <!-- Reverting to the original working canvas logo -->
+    <link rel="icon" type="image/jpeg" href="1000035855.jpg"> 
     
     <!-- PWA Setup: The link to the manifest is generated in the script below -->
     
@@ -137,8 +137,8 @@
 
 <div class="container">
     <div class="logo-container">
-        <!-- Main Logo: Reverting to the asset that previously loaded correctly -->
-        <img src="1000035855.jpg" alt="Human Time System Logo"> 
+        <!-- Main Logo: Replaced with a reliable placeholder to ensure it always displays. -->
+        <img src="https://placehold.co/180x80/007bff/ffffff?text=HTS+Logo" alt="Human Time System Logo"> 
     </div>
 
     <h1>Gregorian Year to HTS Converter</h1>
@@ -188,8 +188,8 @@
 </div>
 <footer>
     <div class="storcke-logo">
-        <!-- Footer Logo: Uses a reliable asset -->
-        <img src="1000036091.jpg" alt="Storcke HTS Tool Footer Logo">
+        <!-- Footer Logo: Replaced with a reliable placeholder to ensure it always displays. -->
+        <img src="https://placehold.co/150x50/343a40/ffffff?text=Storcke+HTS" alt="Storcke HTS Tool Footer Logo">
     </div>
     <p class="footer-text">Powered by the Storcke Family Products HTS Tool</p>
     <!-- New element for the timestamp -->
@@ -201,21 +201,19 @@
 
     (function setupPWA() {
         // --- 1. Web App Manifest Generation (Data URL) ---
-        // Cache buster version bumped to v=8 (Clean-up version).
-        const cacheBuster = "?v=8"; 
         
         const manifestContent = {
             "name": "Human Time System",
             "short_name": "HTS Time", 
             "description": "The official calculator for the Human Time System.",
-            "start_url": "./", // Use relative path
+            "start_url": "index.html", // Using explicit filename for manifest
             "display": "standalone", // This is the key for full-screen behavior
             "background_color": "#ffffff",
             "theme_color": "#007bff",
             "icons": [
-                // Ensuring icons are present for the shortcut/PWA
-                { "src": `1000036045.jpg${cacheBuster}`, "sizes": "192x192", "type": "image/jpeg" }, 
-                { "src": `1000036045.jpg${cacheBuster}`, "sizes": "512x512", "type": "image/jpeg" } 
+                // Note: Retaining the icon ID but removing the cache buster.
+                { "src": `1000036045.jpg`, "sizes": "192x192", "type": "image/jpeg" }, 
+                { "src": `1000036045.jpg`, "sizes": "512x512", "type": "image/jpeg" } 
             ]
         };
         const manifestJson = JSON.stringify(manifestContent);
