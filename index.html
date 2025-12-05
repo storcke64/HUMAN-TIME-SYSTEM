@@ -1,25 +1,34 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>    
-    <!-- Basic setup and title from user's code -->    
+    <!-- Basic setup and title -->    
     <meta charset="UTF-8">    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">    
     <title>Human Time System (HTS) Converters</title>
 
-    <!-- PWA Setup: Link to the Manifest -->    
+    <!-- PWA Setup: Link to the Manifest (CRITICAL for PWA recognition) -->    
     <link rel="manifest" href="manifest.json">
 
     <!-- PWA Meta Tags (Theme, Apple) -->    
     <meta name="theme-color" content="#4f46e5">    
-    <!-- Using a common icon name for simplicity, assume a 512x512 PNG exists -->    
-    <link rel="apple-touch-icon" href="icon-512.png">     
+    
+    <!-- === PWA ICON LINKS (CRITICAL DESKTOP FIX) === -->
+    <!-- Define standard favicon (32x32) -->
+    <link rel="icon" type="image/png" href="1000035855.png" sizes="32x32">
+    <!-- Define Apple Touch Icon (used by iOS and sometimes desktop installers) -->
+    <link rel="apple-touch-icon" href="1000035855.png">     
+    <!-- Explicitly defining high-resolution icons for desktop installation -->
+    <link rel="icon" type="image/png" href="1000035855.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="1000035855.png" sizes="512x512">
+    <!-- Using the user's high-resolution asset to ensure sharp display on large screens -->
+    <link rel="icon" type="image/png" href="1000035855.png" sizes="1866x1866">
+    
     <meta name="apple-mobile-web-app-capable" content="yes">    
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">    
     <meta name="apple-mobile-web-app-title" content="HTS Tool">    
-    <!-- END MOBILE-SPECIFIC PWA ADDITIONS -->
 
     <style>                
-        /* * FIX FOR MOBILE JIGGLE:          * 1. Set box-sizing to border-box for predictable widths.         */        
         * {            
             box-sizing: border-box;        
         }
@@ -29,17 +38,15 @@
             display: flex;                        
             flex-direction: column;                        
             align-items: center;                        
-            /* Reduced padding to rely on inner container margins for centering */            
             padding: 0;                        
             background-color: #f0f2f5;                
         }        
         
-        /* === Custom Splash Screen Styles (Optimized for Transparent PNG) === */        
+        /* === Custom Splash Screen Styles (With Image) === */        
         #custom-splash {            
             position: fixed;            
             top: 0;            
             left: 0;            
-            /* REVERTED TO 100vw (This was the source of the potential jiggle) */            
             width: 100vw;             
             height: 100vh;            
             display: flex;            
@@ -47,23 +54,27 @@
             justify-content: center;            
             align-items: center;            
             background-color: #007bff; /* Matching manifest theme_color */            
-            z-index: 9999; /* Ensure it covers everything */            
+            z-index: 9999;            
             color: white;            
-            transition: opacity 0.3s ease-out; /* Smooth fade-out */            
+            transition: opacity 0.3s ease-out;            
             text-align: center;        
         }                
-        /* Style for the image on the splash screen */        
+        /* Style for the image on the splash screen - NOW CIRCULAR */        
         .splash-logo-image {            
-            /* We will use a fixed, prominent size */            
-            width: 300px;             
-            height: 300px;
-            object-fit: contain; /* Ensures the whole image is visible */            
-            margin-bottom: 20px;        
+            width: 250px;             
+            height: 250px;
+            /* Use 'cover' to ensure the photo fills the circle without distortion */
+            object-fit: cover; 
+            margin-bottom: 20px;
+            /* CRITICAL FIX: border-radius 50% makes it a circle */
+            border-radius: 50%; 
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            border: 5px solid white; /* Add a nice white border for contrast */
         }
 
         /* Style for the main text on the splash screen */        
         .splash-caption {            
-            font-size: 1.8em;            
+            font-size: 2.2em; 
             font-weight: 700;            
             color: white;            
             padding: 0 20px;            
@@ -73,27 +84,25 @@
 
         #custom-splash p {            
             margin-top: 10px;            
-            font-size: 1.2em;        
+            font-size: 1.4em;       
         }        
         /* === END Splash Screen Styles === */
 
         /* Main app content wrapper to handle spacing from the top */        
         #app-content {            
-            padding: 20px 0; /* Add vertical padding */            
-            width: 100%; /* Ensure it spans the full width */        
+            padding: 20px 0;            
+            width: 100%;        
         }                
         
         /* === Centering Fix: Apply margin: auto to containers with fixed max-width === */        
         .container {                        
             background-color: #ffffff;                        
-            padding: 40px 20px; /* Adjusted horizontal padding */            
+            padding: 40px 20px;            
             border-radius: 12px;                        
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);                        
             width: 90%;                        
             max-width: 450px;            
-            /* --- CENTERING FIX START --- */            
-            margin: 0 auto 30px auto; /* Centers horizontally and adds bottom margin */            
-            /* --- CENTERING FIX END --- */            
+            margin: 0 auto 30px auto;            
             text-align: center;        
         }                
         
@@ -156,7 +165,7 @@
         }                
         button:active {                        
             transform: scale(0.99);                
-        }                
+        }        
         /* Styling for Result Boxes */                
         #result-convert, #result-difference, #result-project, #result-hts-convert, #result-past {                        
             margin-top: 35px;                        
@@ -169,13 +178,13 @@
             font-weight: bold;                
         }                
         .warning-text {                        
-            color: #ff4500; /* Deep Orange for warning */                        
+            color: #ff4500;                        
             font-weight: 600;                        
             font-size: 0.95em;                
         }                
         /* Footer/New Logo Styling */                
         footer {                        
-            margin: 40px auto 40px auto; /* CENTERING FIX */            
+            margin: 40px auto 40px auto;            
             padding-top: 20px;                        
             border-top: 1px solid #ccc;                        
             width: 90%;                        
@@ -195,10 +204,10 @@
         /* Footer link for documentation */
         .footer-link {
             font-size: 0.9em;
-            margin-top: 15px; /* Adds space above the link */
-            display: block; /* Makes it take its own line */
-            color: #007bff; /* Blue for link */
-            text-decoration: none; /* Clean up */
+            margin-top: 15px;
+            display: block;
+            color: #007bff;
+            text-decoration: none;
             font-weight: 600;
         }
         .footer-link:hover {
@@ -209,20 +218,31 @@
         .hidden {            
             display: none !important;        
         }        
+
+        /* Style for the logo error message in the main content */
+        #logo-status {
+            color: #ff4500; /* Red warning text */
+            margin-top: 10px;
+            font-weight: bold;
+            padding: 10px;
+            background: #ffe0e0; /* Light red background */
+            border-radius: 8px;
+            border: 1px solid #ff4500;
+        }
     </style>
 </head>
 <body>
 
-<!-- === Custom Splash Screen (4-Second Delay) === -->
+<!-- === Custom Splash Screen (4-Second Delay) - NOW WITH CIRCULAR IMAGE FIX === -->
 <div id="custom-splash">    
-    <!-- Image source is correctly set to daughter_photo.png -->    
+    <!-- MANDATORY: Daughter's Photo set to the user-provided filename -->
     <img         
         id="daughter-photo"         
-        src="daughter_photo.png"         
+        src="daughter_photo.png"
         alt="Daughter's Photo"         
-        class="splash-logo-image"        
-        onerror="this.onerror=null; this.src='https://placehold.co/300x300/ffffff/ff0000?text=Logo+Missing'"    
-    >    
+        class="splash-logo-image"
+        onerror="handleLogoError(this, 'daughter_photo.png');" 
+    >
     <p class="splash-caption">Welcome to the Storcke HTS Tool</p>    
     <p>Loading Human Time System Converter...</p>
 </div>
@@ -233,9 +253,15 @@
     
     <!-- CONVERTER 1: Gregorian to HTS -->    
     <div class="container">            
-        <div class="logo-container">                    
-            <!-- Reverted to original file name as requested -->                    
-            <img src="1000035855.png" alt="Human Time System Logo">             
+        <div class="logo-container" id="main-logo-container">                    
+            <!-- Main HTS Logo (Displayed in content) - Error handler shows notice if missing -->                    
+            <img 
+                id="main-content-logo" 
+                src="1000035855.png" 
+                alt="Human Time System Logo"
+                onerror="handleLogoError(this, '1000035855.png');" 
+            >
+            <!-- Error status div will be inserted here by JS if image fails -->
         </div>        
         <h1>Gregorian Year to HTS Converter</h1>
         <label for="gregorianYear">Enter Gregorian Year (AD):</label>            
@@ -313,11 +339,15 @@
         </div>    
     </div>    
 
-    <!-- Application Status section removed as requested. -->
     
     <footer>            
         <div class="storcke-logo">                    
-            <img src="storcke_hts_logo.png" alt="Storcke HTS Tool">            
+            <!-- Footer Logo - Not to be used as PWA icon -->
+            <img 
+                src="storcke_hts_logo.png" 
+                alt="Storcke HTS Tool"
+                onerror="handleLogoError(this, 'storcke_hts_logo.png');" 
+            >            
         </div>            
         <p class="footer-text">Powered by the Storcke Family Products HTS Tool</p>
         
@@ -332,40 +362,65 @@
 
 <!-- PWA Service Worker Registration Script (Crucial for Installation) -->
 <script>    
+    // Function to handle the logo loading failure and provide feedback
+    function handleLogoError(imgElement, filename) {
+        console.error("CRITICAL ERROR: Logo failed to load:", filename);
+        imgElement.onerror = null; // Prevent infinite loop
+        
+        // Use a generic placeholder image for the missing logo
+        imgElement.src = `https://placehold.co/180x180/007bff/ffffff?text=${encodeURIComponent(filename)}`;
+        
+        // Create or find the status div in the main content container
+        let statusDiv = document.getElementById('logo-status');
+        if (!statusDiv) {
+            statusDiv = document.createElement('div');
+            statusDiv.id = 'logo-status';
+            // Insert the status div right after the failing image element
+            imgElement.parentNode.insertBefore(statusDiv, imgElement.nextSibling);
+        }
+
+        statusDiv.innerHTML = `⚠️ **ERROR:** The image (**${filename}**) was not found. Please ensure the file is uploaded correctly.`;
+    }
+
     // Service Worker registration logic    
     if ('serviceWorker' in navigator) {        
         window.addEventListener('load', () => {        
+        console.log('SW Registration: Window loaded, attempting registration in 100ms...');
         // Introduce a slight delay (100ms) to ensure all environment resources are loaded,         
-        // which often resolves "URL protocol not supported" errors in sandboxed contexts.        
         setTimeout(() => {            
-            // Registering sw.js at the root scope '/'            
-            navigator.serviceWorker.register('/sw.js')            
+            // Registering the Service Worker using the relative path (./sw.js)
+            navigator.serviceWorker.register('./sw.js')            
             .then(registration => {                
-                console.log('Service Worker registered successfully with scope: ', registration.scope);            
+                console.log('SW Registration: Success with scope: ', registration.scope);            
             })            
             .catch(error => {                
-                console.error('Service Worker registration failed: ', error);            
+                console.error('SW Registration: FAILED. This could cause installation issues.', error);            
             });        
         }, 100);         
         });    
     }
 
-    /** * Shows the main application content after a delay.     
-     * This function is called after all initial app logic is run.     
+    /** * Hides the splash screen, runs initialization logic, and shows the main application content.
+     * This function is now the only entry point for app initialization after the 4-second delay.
      */    
     function showAppContent() {        
+        console.log('ShowAppContent: Starting sequence to hide splash.');
+        
+        // 1. RUN THE APPLICATION LOGIC FIRST (MOVED FROM DOMContentLoaded)
+        initializeApp();
+        
         const splash = document.getElementById('custom-splash');        
         const content = document.getElementById('app-content');
 
-        // Start the fade-out process        
+        // 2. Hide the splash screen element
         splash.style.opacity = '0'; 
-        // After the fade transition is complete (300ms), hide it completely        
+        
         setTimeout(() => {            
             splash.style.display = 'none';            
             content.classList.remove('hidden');
-            // Start the live time update loop after the splash screen is gone
-            startLiveTimeUpdate();        
-        }, 300); // 300ms matches the CSS transition time    
+            startLiveTimeUpdate();
+            console.log('ShowAppContent: Splash hidden, content visible. You should now see the app.');
+        }, 300); // Wait for the opacity transition to finish (300ms defined in CSS)
     }
 </script>
 
@@ -374,26 +429,26 @@
     
     // --- HTS Conversion Logic (Shared) ---        
     function getHTSNotation(gregorianYear) {                
-        // --- HTS Conversion Constants ---                
         const BASE_GREGORIAN_YEAR = 2023;                
         const HTS_BASE_YEAR = 40000;                
         const EPOCH_LENGTH = 50000;                
         const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         
-        // Gregorian year equivalent of HTS Year 0 (2023 - 40000 = -37977)                
         const HTS_YEAR_0_GREGORIAN = BASE_GREGORIAN_YEAR - HTS_BASE_YEAR;                
         const yearsSinceHTS0 = gregorianYear - HTS_YEAR_0_GREGORIAN;
 
-        // Calculate Epoch components                
+        if (yearsSinceHTS0 < 0) {
+            // Error case for years before the HTS starting point
+            return { error: true, message: "The year is below the HTS minimum (-37,977 AD)." };
+        }
+
         const epochIndex = Math.floor(yearsSinceHTS0 / EPOCH_LENGTH);                
         const yearWithinEpoch = yearsSinceHTS0 % EPOCH_LENGTH;                
         
-        // Calculate Supercycle and Epoch Letter                
         const supercycleNumber = Math.floor(epochIndex / ALPHABET.length) + 1;                
         const letterIndex = epochIndex % ALPHABET.length;                
         const epochLetter = ALPHABET[letterIndex];
 
-        // Format outputs                
         const HTS_Year_Formatted = String(yearWithinEpoch).padStart(5, '0');                
         const HTS_Epoch_Year = `${epochLetter}${HTS_Year_Formatted}`;                
         const HTS_Full = `${supercycleNumber}${epochLetter}${HTS_Year_Formatted}`;                
@@ -402,23 +457,48 @@
     }        
     // ------------------------------------
 
+    /**
+     * @param {number} gregorianYear - The astronomical year number (e.g., 2025 or -3975).
+     * @returns {string} The formatted historical year (e.g., "2025 AD / CE" or "3976 BC / BCE").
+     * * FIX: Implements the conversion from Astronomical Year Numbering (which uses negative numbers for BC) 
+     * to the historical BC/AD system (which has no year zero).
+     */
+    function formatGregorianYear(gregorianYear) {
+        if (gregorianYear >= 1) {
+            return gregorianYear + " AD / CE";
+        } else if (gregorianYear === 0) {
+            // The historical system jumps from 1 BC to 1 AD.
+            return "1 BCE / 1 CE Transition";
+        } else {
+            // Formula: BC/BCE Year = 1 - Astronomical Year
+            // Example: 1 - (-7000) = 7001
+            const bcYear = 1 - gregorianYear;
+            return bcYear + " BC / BCE";
+        }
+    }
+
+
     // --- FUNCTION 1: Gregorian to HTS Conversion (Manual Input) ---        
     function convertToHTS() {                
         const yearInput = document.getElementById('gregorianYear').value;                
         const resultDiv = document.getElementById('result-convert');                
         const gregorianYear = parseInt(yearInput);
 
-        if (isNaN(gregorianYear) || gregorianYear < -40000) {                        
-            resultDiv.innerHTML = "❌ Please enter a valid Gregorian year (e.g., 2025). The system starts 40,000 years before 2023.";                        
+        if (isNaN(gregorianYear)) {                        
+            resultDiv.innerHTML = "❌ Please enter a valid Gregorian year (e.g., 2025).";                        
             return;                
         }                
         
         const htsData = getHTSNotation(gregorianYear);
 
-        // Reverted HTML structure                
+        if (htsData.error) {
+            resultDiv.innerHTML = `❌ ${htsData.message}`;
+            return;
+        }
+
         resultDiv.innerHTML = `                        
             <h3>✅ Conversion Complete</h3>                        
-            <p>The Gregorian Year ${htsData.gregorianYear} AD is:</p>                        
+            <p>The Gregorian Year ${formatGregorianYear(htsData.gregorianYear)} is:</p>                        
             <p style="font-size: 2.5em; color: #007bff; margin: 10px 0;">                                
                 ${htsData.HTS_Epoch_Year}                        
             </p>                        
@@ -433,18 +513,17 @@
         const htsInput = document.getElementById('htsYearInput').value.trim().toUpperCase();                
         const resultDiv = document.getElementById('result-hts-convert');
 
-        // Constants from HTS logic                
         const BASE_GREGORIAN_YEAR = 2023;                
         const HTS_BASE_YEAR = 40000;                
         const EPOCH_LENGTH = 50000;                
         const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";                
         const HTS_YEAR_0_GREGORIAN = BASE_GREGORIAN_YEAR - HTS_BASE_YEAR;
 
-        // Regex to match the full notation: [Supercycle (optional)] [Epoch Letter] [5-digit Year]                
+        // Regex to match Supercycle (optional, number), Epoch Letter (A-Z), and 5-digit Year (00000-49999)
         const match = htsInput.match(/^(\d*)?([A-Z])(\d{5})$/); 
         
         if (!match) {                        
-            resultDiv.innerHTML = "❌ Invalid HTS format. Please use the full notation, e.g., **1B40000** (Supercycle, Epoch Letter, 5-digit Year).";                        
+            resultDiv.innerHTML = "❌ Invalid HTS format. Please use the full notation. (e.g., **1B40000** - Supercycle, Epoch Letter, 5-digit Year).";                        
             return;                
         }
 
@@ -452,7 +531,7 @@
         const epochLetter = match[2];                
         const yearWithinEpochStr = match[3];
 
-        // Default to Supercycle 1 if not explicitly entered or entered as blank/empty string                
+        // If Supercycle is omitted (e.g., B40000), default to 1
         const supercycleNumber = supercycleStr === '' ? 1 : parseInt(supercycleStr);                 
         const yearWithinEpoch = parseInt(yearWithinEpochStr);
 
@@ -472,23 +551,22 @@
             return;                
         }
 
-        // 1. Calculate the overall epoch index (zero-based)                
         const totalEpochs = (supercycleNumber - 1) * ALPHABET.length + letterIndex;
 
-        // 2. Calculate the total years since HTS Year 0                
         const yearsSinceHTS0 = (totalEpochs * EPOCH_LENGTH) + yearWithinEpoch;
 
-        // 3. Calculate the Gregorian Year                
         const gregorianYear = yearsSinceHTS0 + HTS_YEAR_0_GREGORIAN;
+        
+        // Use the new helper function for display
+        const formattedGregorianYear = formatGregorianYear(gregorianYear);
 
-        // Reverted HTML structure                
         resultDiv.innerHTML = `                        
             <h3>✅ Conversion Complete</h3>                        
             <p>The HTS Year **${htsInput}** is equivalent to:</p>                        
             <p style="font-size: 2.5em; color: #007bff; margin: 10px 0;">                                
-                ${gregorianYear} AD                        
+                ${formattedGregorianYear}
             </p>                        
-            <p>This corresponds to Supercycle **${supercycleNumber}**, Epoch **${epochLetter}**, and Year **${yearWithinEpoch}**.</p>                
+            <p>This corresponds to Supercycle **${supercycleNumber}**</p>                
         `;        
     }        
     
@@ -508,10 +586,9 @@
         
         const difference = Math.abs(endYear - startYear);                
         
-        // Reverted HTML structure                
         resultDiv.innerHTML = `                        
             <h3>✅ Duration Calculated</h3>                        
-            <p>The difference between **${startYear} AD** and **${endYear} AD** is:</p>                        
+            <p>The difference between **${formatGregorianYear(startYear)}** and **${formatGregorianYear(endYear)}** is:</p>                        
             <p style="font-size: 2.5em; color: #007bff; margin: 10px 0;">                                
                 ${difference} Years                        
             </p>                        
@@ -533,7 +610,6 @@
             return;                
         }                
         
-        // --- VALIDATION: Limit resulting year to 12 billion ---                
         const MAX_GREGORIAN_LIMIT = 12000000000;                 
         const futureGregorianYear = baseYear + yearsToAdd;
 
@@ -545,14 +621,17 @@
             `;                        
             return;                
         }                
-        // --- END VALIDATION ---                
         
         const htsData = getHTSNotation(futureGregorianYear);
 
-        // Reverted HTML structure                
+        if (htsData.error) {
+            resultDiv.innerHTML = `❌ ${htsData.message}`;
+            return;
+        }
+
         resultDiv.innerHTML = `                        
             <h3>✅ Projection Calculated</h3>                        
-            <p>Adding **${yearsToAdd} years** to **${baseYear} AD** results in **${futureGregorianYear} AD**.</p>                        
+            <p>Adding **${yearsToAdd} years** to **${formatGregorianYear(baseYear)}** results in **${formatGregorianYear(futureGregorianYear)}**.</p>                        
             <p>The HTS Year will be:</p>                        
             <p style="font-size: 2.5em; color: #007bff; margin: 10px 0;">                                
                 ${htsData.HTS_Epoch_Year}                        
@@ -573,23 +652,30 @@
         }
 
         const currentYear = new Date().getFullYear();
-        const pastGregorianYear = currentYear - yearsAgo;
-
-        if (pastGregorianYear < -40000) {
-            resultDiv.innerHTML = "⚠️ The calculated past year falls outside the current Human Time System epoch range (before -37,977 AD).";
-            return;
-        }
+        // This calculation can result in a negative astronomical year (e.g., -5000)
+        const pastGregorianYear = currentYear - yearsAgo; 
+        
+        // Use the new helper function to display the year in BC/BCE format if negative
+        const formattedGregorianYear = formatGregorianYear(pastGregorianYear);
 
         const htsData = getHTSNotation(pastGregorianYear);
 
+        if (htsData.error) {
+            resultDiv.innerHTML = `⚠️ The calculated past year falls outside the current Human Time System epoch range (before -37,977 AD).`;
+            return;
+        }
+        
+        const htsEpochYear = htsData.HTS_Epoch_Year;
+        const htsFull = htsData.HTS_Full;
+
         resultDiv.innerHTML = `                        
             <h3>✅ Past Year Verified</h3>                        
-            <p>**${yearsAgo} years ago** was the Gregorian Year **${pastGregorianYear} AD**.</p>                        
+            <p>**${yearsAgo} years ago** was the Gregorian Year **${formattedGregorianYear}**.</p>                        
             <p>The HTS Year for that date was:</p>                        
             <p style="font-size: 2.5em; color: #007bff; margin: 10px 0;">                                
-                ${htsData.HTS_Epoch_Year}                        
+                ${htsEpochYear}                        
             </p>                        
-            <p>Full HTS Notation: **${htsData.HTS_Full}**</p>                
+            <p>Full HTS Notation: **${htsFull}**</p>                
         `;
     }
 
@@ -597,13 +683,11 @@
     function updateLiveTime() {
         const now = new Date();
         
-        // Time Formatting (CT for consistency, though local time is fine for "live")
         const timeOptions = {
             hour: '2-digit', 
             minute: '2-digit', 
             second: '2-digit', 
             hour12: true, 
-            timeZoneName: 'short'
         };
         const dateOptions = {
             year: 'numeric', 
@@ -611,62 +695,71 @@
             day: 'numeric'
         };
         
+        // Format time and date strings
         const timeStr = now.toLocaleTimeString('en-US', timeOptions);
         const dateStr = now.toLocaleDateString('en-US', dateOptions);
 
-        // HTS Calculation using current year
+        // Calculate HTS Year for the current Gregorian year
         const currentYear = now.getFullYear();
         const htsData = getHTSNotation(currentYear);
 
-        // Update the DOM elements
+        // Update display elements
         document.getElementById('live-gregorian-time').textContent = timeStr;
         document.getElementById('live-gregorian-date').textContent = dateStr;
-        document.getElementById('live-hts-year').textContent = htsData.HTS_Full;
+        // Use HTS_Full notation for the live display
+        document.getElementById('live-hts-year').textContent = htsData.HTS_Full || '--B-----';
     }
 
     // Function to start the live update loop
     function startLiveTimeUpdate() {
-        updateLiveTime(); // Initial call
+        updateLiveTime();
         setInterval(updateLiveTime, 1000); // Update every second
     }
 
     // Set the default year and run all conversions on load (The main app initialization function)        
     function initializeApp() {        
-        const currentYear = new Date().getFullYear();                 
+        console.log('InitializeApp: Starting default calculations...');
+        // The core logic of the app runs here.
+        try {
+            const currentYear = new Date().getFullYear();                 
+            
+            // 1. Gregorian to HTS
+            document.getElementById('gregorianYear').value = currentYear;                
+            convertToHTS();
+
+            // 2. HTS to Gregorian (Defaulting to current HTS)
+            const currentHTS = getHTSNotation(currentYear);                
+            document.getElementById('htsYearInput').value = currentHTS.HTS_Full || '';                
+            convertHTSToGregorian();
+
+            // 3. Difference Calculator
+            document.getElementById('startYear').value = currentYear;                
+            document.getElementById('endYear').value = currentYear + 50;                 
+            calculateDifference();
+
+            // 4. Future Year Projector
+            document.getElementById('baseYear').value = currentYear;                
+            document.getElementById('yearsToAdd').value = 100;                
+            projectFutureYear();
+            
+            // 5. Past Year Verifier
+            document.getElementById('yearsAgo').value = 6500;
+            verifyPastYear();
+            
+            console.log('InitializeApp: Default calculations complete.');
+        } catch (error) {
+            // Log if anything in the initialization fails to pinpoint the issue
+            console.error('CRITICAL: Initialization failed, app may be stuck on splash.', error);
+        }
         
-        // 1. Set default for Conversion tool (Gregorian to HTS)                
-        document.getElementById('gregorianYear').value = currentYear;                
-        convertToHTS();
-
-        // 2. Set default for HTS to Gregorian tool                
-        const currentHTS = getHTSNotation(currentYear);                
-        document.getElementById('htsYearInput').value = currentHTS.HTS_Full;                
-        convertHTSToGregorian();
-
-        // 3. Set defaults for Difference tool                
-        document.getElementById('startYear').value = currentYear;                
-        document.getElementById('endYear').value = currentYear + 50;                 
-        calculateDifference();
-
-        // 4. Set defaults for Projection tool                
-        document.getElementById('baseYear').value = currentYear;                
-        document.getElementById('yearsToAdd').value = 100;                
-        projectFutureYear();
-        
-        // 5. Set default for Past Year Verification tool
-        document.getElementById('yearsAgo').value = 6500;
-        verifyPastYear();
     }
 
-    // Run initialization logic first, then enforce the 4-second splash screen    
     document.addEventListener('DOMContentLoaded', () => {                
-        // 1. Run all calculations to prepare the content (while it's still hidden)        
-        initializeApp();
-
-        // 2. Set the desired 4000ms (4 second) minimum delay        
-        const MINIMUM_SPLASH_TIME = 4000;                 
+        const MINIMUM_SPLASH_TIME = 4000; // 4 seconds
+        console.log(`DOMContentLoaded: Setting timer for ${MINIMUM_SPLASH_TIME / 1000} seconds to hide splash screen and run initialization logic.`);
         
-        // 3. Wait for the minimum time, then call the function to reveal the app        
+        // The splash screen transition and all heavy app initialization logic 
+        // are now strictly delayed until after the MINIMUM_SPLASH_TIME.
         setTimeout(showAppContent, MINIMUM_SPLASH_TIME);    
     });
 </script>
